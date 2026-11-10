@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="المحاضرة 4 من كورس Ai Smart Man: الوكيل الذكي من الفكرة إلى التنفيذ. يقدمها Dr. Ayman Elkady.">
+<link rel="icon" href="logo.jpg">
+<title>محاضرة الوكيل الذكي</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Changa:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Playpen+Sans+Arabic:wght@400;600&display=swap">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout concept: an engineer's notebook. White graph paper, black ink bands,
+   neon-green highlighter, gold stamps, blue ballpoint notes and pencil sketches. */
+:root{
+  --paper:#ffffff; --card:#f6f6f2; --ink:#0c0c0d; --ink-soft:#3b3b40;
+  --grid:rgba(12,12,13,.07); --rule:rgba(12,12,13,.16);
+  --neon:#39ff14; --on-neon:#0c0c0d;
+  --gold:#f2b600; --gold-text:#8a6500; --on-gold:#0c0c0d;
+  --pen:#1a3fd1; --pencil:#6c6c72;
+  --band:#0c0c0d; --band-fg:#ffffff; --band-soft:#b9b9bd; --band-grid:rgba(255,255,255,.07);
+  --ok:#0a7d2c; --bad:#c2281d;
+  --f-display:"Changa","Segoe UI",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --f-hand:"Playpen Sans Arabic","Segoe Print","Comic Sans MS",cursive;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0e0e10; --card:#18181b; --ink:#f4f4f0; --ink-soft:#c4c4c0;
+    --grid:rgba(255,255,255,.06); --rule:rgba(255,255,255,.2);
+    --gold-text:#f2b600; --pen:#8ea6ff; --pencil:#a9a9ae;
+    --band:#000000; --ok:#5ee07f; --bad:#ff8479; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0e0e10; --card:#18181b; --ink:#f4f4f0; --ink-soft:#c4c4c0;
+  --grid:rgba(255,255,255,.06); --rule:rgba(255,255,255,.2);
+  --gold-text:#f2b600; --pen:#8ea6ff; --pencil:#a9a9ae;
+  --band:#000000; --ok:#5ee07f; --bad:#ff8479; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.85}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
+.wrap{max-width:1040px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--f-display);line-height:1.3;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--pen);outline-offset:3px;border-radius:4px}
+.hl{background:var(--neon);color:var(--on-neon);padding:0 .28em;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.en{display:inline-block;direction:ltr;unicode-bidi:isolate;font-family:var(--f-body);font-size:.78em;font-weight:600;letter-spacing:.02em;border:1.5px solid var(--rule);border-radius:999px;padding:0 .7em;line-height:1.7;color:var(--ink-soft)}
+.pen{font-family:var(--f-hand);color:var(--pen);font-size:1.02rem;line-height:1.7}
+.pencil{font-family:var(--f-hand);color:var(--pencil);font-size:.98rem;line-height:1.7}
+
+/* ---------- hero ---------- */
+.hero{background:var(--band);color:var(--band-fg);background-image:linear-gradient(var(--band-grid) 1px,transparent 1px),linear-gradient(90deg,var(--band-grid) 1px,transparent 1px);background-size:28px 28px;position:relative;overflow:hidden}
+.hero .wrap{padding-block:34px 44px;position:relative}
+.hero-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{width:74px;height:74px;border-radius:18px;object-fit:cover;border:2px solid var(--gold);flex:none}
+.course{display:flex;flex-direction:column;gap:2px;min-width:0}
+.course small{color:var(--band-soft);font-size:.85rem}
+.course b{font-family:var(--f-display);font-size:1.35rem;direction:ltr;unicode-bidi:isolate;text-align:right;letter-spacing:.01em}
+.stamp{margin-inline-start:auto;width:92px;height:92px;border-radius:50%;background:var(--gold);color:var(--on-gold);display:grid;place-items:center;text-align:center;font-family:var(--f-display);transform:rotate(-8deg);border:3px dashed var(--band);outline:3px solid var(--gold);flex:none}
+.stamp span{display:block;font-size:.72rem;font-weight:700;line-height:1.1}
+.stamp b{display:block;font-size:2.3rem;line-height:1;font-weight:800}
+.hero h1{font-size:clamp(2.3rem,7vw,4.6rem);font-weight:800;margin-top:34px;line-height:1.25;max-width:13em}
+.hero h1 .hl{padding:0 .2em}
+.hero .sub{font-size:1.15rem;color:var(--band-soft);margin-top:14px;max-width:34em}
+.hero .handnote{font-family:var(--f-hand);color:#9db1ff;font-size:1.15rem;margin-top:10px;transform:rotate(-1.5deg);display:inline-block}
+.presenter{display:flex;align-items:center;gap:14px;margin-top:30px}
+.avatar{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);box-shadow:0 0 0 4px var(--band),0 0 0 6px var(--neon);flex:none}
+.presenter small{display:block;color:var(--band-soft);font-size:.85rem;line-height:1.4}
+.presenter b{font-family:var(--f-display);font-size:1.25rem;direction:ltr;unicode-bidi:isolate;display:block}
+.presenter i{font-style:normal;font-size:.85rem;color:var(--gold);direction:ltr;unicode-bidi:isolate;display:block}
+.hero-sketch{position:absolute;inset-inline-end:max(16px,env(safe-area-inset-left,0px));bottom:10px;width:min(300px,34vw);opacity:.85;pointer-events:none}
+@media (max-width:760px){.hero-sketch{display:none}}
+
+/* ---------- sticky nav ---------- */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:2px solid var(--ink)}
+.nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-block:9px;scrollbar-width:none}
+.nav a{flex:none;text-decoration:none;font-family:var(--f-display);font-weight:700;font-size:.9rem;padding:3px 13px;border:2px solid var(--ink);border-radius:999px;white-space:nowrap}
+.nav a:hover{background:var(--neon);color:var(--on-neon);border-color:var(--on-neon)}
+.bar{height:4px;background:var(--neon);width:0;transition:width .15s linear}
+
+/* ---------- sections ---------- */
+main{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px}
+section{padding-block:58px 34px;scroll-margin-top:60px}
+section + section{border-top:2px dashed var(--rule)}
+.sec-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px}
+.num{font-family:var(--f-display);font-weight:800;font-size:3.4rem;line-height:.9;color:var(--on-gold);background:var(--gold);min-width:1.35em;text-align:center;padding:.14em .1em .08em;border-radius:10px;transform:rotate(-4deg);border:2.5px solid var(--ink);flex:none}
+.sec-head small{font-family:var(--f-display);font-weight:700;color:var(--gold-text);font-size:.95rem;letter-spacing:.02em}
+.sec-head h2{font-size:clamp(1.7rem,4.4vw,2.5rem);font-weight:800}
+.lead{font-size:1.15rem;font-weight:500;max-width:38em;margin-bottom:22px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;align-items:start}
+.cols > *{min-width:0}
+.stack{display:flex;flex-direction:column;gap:18px}
+.duo{display:grid;grid-template-columns:1fr;gap:22px;align-items:start}
+.duo > *{min-width:0}
+@media (min-width:940px){.duo{grid-template-columns:1.7fr 1fr}}
+@media (max-width:760px){.fig figcaption::before{content:"اسحب الرسم لرؤية باقيه. ";font-family:var(--f-hand);color:var(--pen)}}
+h3{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+figure{margin:0}
+.fig{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;box-shadow:6px 6px 0 var(--ink);padding:14px}
+.fig .scroll{overflow-x:auto}
+.fig svg{display:block;width:100%;height:auto}
+.fig svg.wide{min-width:720px}
+.fig svg.mid{min-width:560px}
+figcaption{font-size:.93rem;color:var(--ink-soft);margin-top:10px;border-top:1.5px dashed var(--rule);padding-top:8px}
+.margin-note{border-inline-start:3px solid var(--pen);padding-inline-start:12px;transform:rotate(-.6deg)}
+ol.qs{margin:0;padding:0;list-style:none;counter-reset:q;display:flex;flex-direction:column;gap:10px}
+ol.qs li{counter-increment:q;display:flex;gap:12px;align-items:baseline;background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:10px 14px;font-weight:500}
+ol.qs li::before{content:counter(q);font-family:var(--f-display);font-weight:800;background:var(--ink);color:var(--paper);width:1.7em;height:1.7em;border-radius:50%;display:grid;place-items:center;flex:none;line-height:1}
+
+/* svg tokens */
+svg text{font-family:var(--f-body);font-size:15px;font-weight:600;fill:var(--ink);stroke:none}
+svg .t-sm{font-size:12.5px;font-weight:500}
+svg .t-lg{font-size:19px;font-weight:700;font-family:var(--f-display)}
+svg .t-on{fill:var(--on-neon)}
+svg .t-gold{fill:var(--on-gold)}
+svg .t-pen{fill:var(--pen);font-family:var(--f-hand);font-weight:600;font-size:16px}
+svg .t-pencil{fill:var(--pencil);font-family:var(--f-hand);font-weight:400;font-size:14.5px}
+svg .t-soft{fill:var(--ink-soft)}
+.s-ink{stroke:var(--ink);stroke-width:2.5;fill:none}
+.s-pencil{stroke:var(--pencil);stroke-width:1.6;fill:none;stroke-linecap:round;filter:url(#rough)}
+.s-pen{stroke:var(--pen);stroke-width:2.2;fill:none;stroke-linecap:round;filter:url(#rough)}
+.s-gold{stroke:var(--gold);stroke-width:5;fill:none;stroke-linecap:round}
+.f-paper{fill:var(--paper)} .f-card{fill:var(--card)} .f-neon{fill:var(--neon)} .f-gold{fill:var(--gold)} .f-ink{fill:var(--ink)} .f-pen{fill:var(--pen)} .f-pencil{fill:var(--pencil)}
+.box{fill:var(--card);stroke:var(--ink);stroke-width:2.5}
+.box.neon{fill:var(--neon)}
+svg a{cursor:pointer}
+svg a:hover .box{fill:var(--neon)}
+svg a:hover text{fill:var(--on-neon)}
+
+/* interactive svg parts */
+.pick{cursor:pointer}
+.pick .box{transition:fill .15s}
+.pick:hover .box{fill:var(--gold)}
+.pick:hover text{fill:var(--on-gold)}
+.pick[aria-pressed="true"] .box{fill:var(--neon)}
+.pick[aria-pressed="true"] text{fill:var(--on-neon)}
+.cable{stroke:var(--pencil);stroke-width:2;fill:none;stroke-dasharray:6 5}
+.cable.on{stroke:var(--gold);stroke-width:5;stroke-dasharray:none}
+.panel{background:var(--card);border:2.5px solid var(--ink);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.panel h4{font-size:1.25rem;font-weight:800}
+.panel dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+.panel dt{font-family:var(--f-display);font-weight:700;color:var(--gold-text);white-space:nowrap}
+.panel dd{margin:0;min-width:0}
+.prompt{font-family:var(--f-hand);color:var(--pen);background:var(--paper);border:1.5px dashed var(--pen);border-radius:10px;padding:8px 12px}
+.hint{font-size:.9rem;color:var(--ink-soft)}
+
+/* goals */
+.goals{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.goals label{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:10px 14px}
+.goals input{appearance:none;-webkit-appearance:none;width:24px;height:24px;border:2.5px solid var(--ink);border-radius:6px;flex:none;margin:5px 0 0;display:grid;place-items:center;background:var(--paper)}
+.goals input:checked{background:var(--neon)}
+.goals input:checked::after{content:"✓";color:var(--on-neon);font-weight:800;line-height:1}
+.goals input:checked + span{text-decoration:line-through;text-decoration-color:var(--pen);text-decoration-thickness:2px}
+
+/* tool cards */
+.group-title{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
+.group-title b{font-family:var(--f-display);font-size:1.3rem}
+.group-title span{flex:1;height:2px;background:var(--ink)}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,225px),1fr));gap:14px}
+.tool{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tool .who{font-size:.82rem;font-weight:700;color:var(--gold-text);font-family:var(--f-display)}
+.tool h4{font-size:1.3rem;font-weight:800}
+.tool p{font-size:.95rem;line-height:1.7}
+.tool .was{font-family:var(--f-hand);color:var(--pencil);font-size:.9rem;text-decoration:line-through}
+.tag{align-self:flex-start;font-family:var(--f-display);font-weight:700;font-size:.8rem;padding:0 10px;border-radius:999px;background:var(--neon);color:var(--on-neon);border:1.5px solid var(--on-neon)}
+.tag.g{background:var(--gold);color:var(--on-gold)}
+
+/* apps */
+details.app{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;overflow:hidden}
+details.app + details.app{margin-top:12px}
+details.app summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:12px 16px}
+details.app summary::-webkit-details-marker{display:none}
+details.app summary .n{font-family:var(--f-display);font-weight:800;font-size:1.3rem;width:1.9em;height:1.9em;border-radius:50%;background:var(--gold);color:var(--on-gold);display:grid;place-items:center;border:2px solid var(--ink);flex:none;line-height:1}
+details.app summary .ttl{flex:1;min-width:0}
+details.app summary h4{font-size:1.2rem;font-weight:800}
+details.app summary .proves{font-size:.9rem;color:var(--ink-soft);line-height:1.5}
+details.app summary::after{content:"+";font-family:var(--f-display);font-size:1.8rem;font-weight:700;line-height:1;flex:none}
+details.app[open] summary::after{content:"−"}
+details.app[open] summary{background:var(--neon);color:var(--on-neon);border-bottom:2.5px solid var(--ink)}
+details.app[open] summary .proves{color:var(--on-neon)}
+.app-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.steps li{display:grid;grid-template-columns:5.2em 1fr;gap:12px;align-items:baseline;border-bottom:1.5px dashed var(--rule);padding-bottom:8px}
+.steps li > b{font-family:var(--f-display);color:var(--gold-text)}
+.steps li > div{min-width:0}
+.warn{border:2px solid var(--pen);border-radius:10px;padding:8px 12px;font-family:var(--f-hand);color:var(--pen);font-size:.98rem;line-height:1.7}
+
+/* safety + summary */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.rule{background:var(--band);color:var(--band-fg);border-radius:14px;padding:16px;border:2.5px solid var(--neon)}
+.rule b{display:block;font-family:var(--f-display);font-size:1.15rem;color:var(--neon);margin-bottom:4px}
+.rule p{font-size:.95rem;line-height:1.7}
+.sum{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;counter-reset:s}
+.sum li{counter-increment:s;font-family:var(--f-display);font-weight:700;font-size:1.25rem;display:flex;gap:14px;align-items:baseline}
+.sum li::before{content:counter(s);color:var(--on-gold);background:var(--gold);border:2px solid var(--ink);border-radius:8px;min-width:1.6em;text-align:center;flex:none}
+.homework{background:var(--gold);color:var(--on-gold);border:2.5px solid var(--ink);border-radius:14px;padding:16px 18px;box-shadow:6px 6px 0 var(--ink)}
+.homework b{font-family:var(--f-display);font-size:1.25rem;display:block}
+
+/* quiz */
+.quiz{display:flex;flex-direction:column;gap:16px}
+.q{background:var(--paper);border:2.5px solid var(--ink);border-radius:14px;padding:14px 16px}
+.q p{font-weight:600;margin-bottom:10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts button{font:inherit;font-weight:600;font-size:.95rem;cursor:pointer;background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:3px 16px}
+.opts button:hover{background:var(--gold);color:var(--on-gold)}
+.opts button.right{background:var(--neon);color:var(--on-neon)}
+.opts button.wrong{border-color:var(--bad);color:var(--bad);text-decoration:line-through;background:var(--card)}
+.fb{font-family:var(--f-hand);color:var(--pen);margin-top:8px;min-height:1.7em}
+.score{font-family:var(--f-display);font-weight:800;font-size:1.3rem;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.score output{background:var(--ink);color:var(--paper);border-radius:10px;padding:0 14px}
+.score button{font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:1px 14px}
+
+footer{background:var(--band);color:var(--band-soft);font-size:.88rem}
+footer .wrap{padding-block:26px 34px;display:flex;flex-direction:column;gap:10px}
+footer b{color:var(--band-fg);font-family:var(--f-display)}
+footer ul{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px 16px}
+footer a{color:var(--neon)}
+</style>
+</head>
+<body>
+<!-- shared sketch filter + arrowheads -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="rough" filterUnits="userSpaceOnUse" x="-100" y="-100" width="1400" height="1000">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/>
+    </filter>
+    <marker id="ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-ink"/></marker>
+    <marker id="ah-pen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-pen"/></marker>
+    <marker id="ah-pencil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-pencil"/></marker>
+    <marker id="ah-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="3.4" markerHeight="3.4" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-gold"/></marker>
+  </defs>
+</svg>
+
+<div dir="rtl" lang="ar">
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <img class="logo" src="logo.jpg" alt="شعار أكاديمية الذكاء الذكي" width="74" height="74">
+      <div class="course">
+        <small>كورس</small>
+        <b>Ai Smart Man</b>
+        <small dir="ltr" style="text-align:right">Ai Smart Academy</small>
+      </div>
+      <div class="stamp" aria-label="المحاضرة رقم 4"><div><span>المحاضرة</span><b>4</b></div></div>
+    </div>
+    <h1><span class="hl">الوكيل الذكي</span><br>من الفكرة إلى التنفيذ</h1>
+    <p class="sub">كيف تحوّل مشكلة عميل إلى موظف رقمي ينفذ العمل على أدواتك الحقيقية.</p>
+    <span class="handnote">الشات يجيب.. الوكيل ينفّذ ✎</span>
+    <div class="presenter">
+      <img class="avatar" src="ayman.jpg" alt="صورة مقدم المحاضرة" width="72" height="72">
+      <div>
+        <small>يقدمها</small>
+        <b>Dr. Ayman Elkady</b>
+        <i>Ai Smart Academy</i>
+      </div>
+    </div>
+    <svg class="hero-sketch" viewBox="0 0 300 220" aria-hidden="true">
+      <circle cx="150" cy="110" r="78" stroke="#8d8d93" stroke-width="1.4" fill="none" filter="url(#rough)"/>
+      <circle cx="150" cy="110" r="46" stroke="#8d8d93" stroke-width="1.2" fill="none" stroke-dasharray="5 5"/>
+      <path d="M150 32 L217.5 149 L82.5 149 Z" stroke="#f2b600" stroke-width="2.2" fill="none" filter="url(#rough)"/>
+      <path d="M30 110 H270 M150 10 V210" stroke="#8d8d93" stroke-width="1" fill="none" stroke-dasharray="2 6"/>
+      <circle cx="150" cy="32" r="7" fill="#39ff14"/><circle cx="217.5" cy="149" r="7" fill="#39ff14"/><circle cx="82.5" cy="149" r="7" fill="#39ff14"/>
+      <path d="M228 60 q24 -18 44 -2" stroke="#9db1ff" stroke-width="2" fill="none" filter="url(#rough)"/>
+    </svg>
+  </div>
+</header>
+
+<nav class="nav" aria-label="أقسام المحاضرة">
+  <div class="wrap">
+    <a href="#map">الخريطة</a>
+    <a href="#s1">1 المشكلة والحل</a>
+    <a href="#s2">2 خريطة الأدوات</a>
+    <a href="#s3">3 الموصلات</a>
+    <a href="#s4">4 التطبيقات</a>
+    <a href="#s5">5 الأمان والختام</a>
+    <a href="#quiz">اختبر نفسك</a>
+  </div>
+  <div class="bar" id="bar"></div>
+</nav>
+
+<main>
+
+<!-- ============ MIND MAP ============ -->
+<section id="map">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><small>مخطط المحاضرة</small><h2>المحاضرة كلها في ورقة واحدة</h2></div>
+    </div>
+    <p class="lead">خمسة محاور تخرج من فكرة واحدة. اضغط على أي محور في الخريطة لتنتقل إلى شرحه.</p>
+    <figure class="fig">
+      <div class="scroll">
+      <svg class="wide" viewBox="0 0 1000 620" role="img" aria-label="خريطة ذهنية: الوكيل الذكي في المنتصف وتتفرع منه خمسة محاور">
+        <path class="s-gold" d="M500 300 Q640 180 800 120"/>
+        <path class="s-gold" d="M500 300 Q660 400 830 420"/>
+        <path class="s-gold" d="M500 300 L500 530"/>
+        <path class="s-gold" d="M500 300 Q340 400 170 420"/>
+        <path class="s-gold" d="M500 300 Q360 180 200 120"/>
+        <path class="s-pencil" d="M860 96 L890 62 M860 144 L895 176 M880 396 L895 360 M880 444 L895 478 M140 96 L110 62 M140 144 L105 176 M120 396 L105 360 M120 444 L105 478 M420 554 L370 572 M580 554 L630 572"/>
+        <text class="t-pencil" x="900" y="52" text-anchor="middle">3 أسئلة للعميل</text>
+        <text class="t-pencil" x="905" y="194" text-anchor="middle">سلم من 4 درجات</text>
+        <text class="t-pencil" x="900" y="350" text-anchor="middle">وكيل المهام</text>
+        <text class="t-pencil" x="900" y="497" text-anchor="middle">وكيل البرمجة</text>
+        <text class="t-pencil" x="320" y="592" text-anchor="middle">البروتوكول = المنفذ</text>
+        <text class="t-pencil" x="680" y="592" text-anchor="middle">الموصل = الكابل</text>
+        <text class="t-pencil" x="100" y="350" text-anchor="middle">فيسبوك وواتساب</text>
+        <text class="t-pencil" x="100" y="497" text-anchor="middle">تطبيق سطح المكتب</text>
+        <text class="t-pencil" x="100" y="52" text-anchor="middle">4 ضوابط</text>
+        <text class="t-pencil" x="95" y="194" text-anchor="middle">تكليف عملي</text>
+
+        <ellipse class="f-neon" cx="500" cy="300" rx="118" ry="56" stroke="var(--ink)" stroke-width="3"/>
+        <text class="t-lg t-on" x="500" y="297" text-anchor="middle" style="font-size:24px">الوكيل الذكي</text>
+        <text class="t-sm t-on" x="500" y="322" text-anchor="middle">المحاضرة 4</text>
+        <text class="t-pen" x="500" y="208" text-anchor="middle">ابدأ من هنا</text>
+        <path class="s-pen" d="M500 216 L500 240" marker-end="url(#ah-pen)"/>
+
+        <a href="#s1"><rect class="box" x="705" y="96" width="190" height="48" rx="12"/><circle class="f-gold" cx="873" cy="120" r="14"/><text class="t-gold" x="873" y="125" text-anchor="middle">1</text><text x="783" y="125" text-anchor="middle">من المشكلة إلى الحل</text></a>
+        <a href="#s2"><rect class="box" x="735" y="396" width="190" height="48" rx="12"/><circle class="f-gold" cx="903" cy="420" r="14"/><text class="t-gold" x="903" y="425" text-anchor="middle">2</text><text x="813" y="425" text-anchor="middle">خريطة الأدوات</text></a>
+        <a href="#s3"><rect class="box" x="405" y="506" width="190" height="48" rx="12"/><circle class="f-gold" cx="573" cy="530" r="14"/><text class="t-gold" x="573" y="535" text-anchor="middle">3</text><text x="483" y="535" text-anchor="middle">الربط والموصلات</text></a>
+        <a href="#s4"><rect class="box" x="75" y="396" width="190" height="48" rx="12"/><circle class="f-gold" cx="243" cy="420" r="14"/><text class="t-gold" x="243" y="425" text-anchor="middle">4</text><text x="153" y="425" text-anchor="middle">التطبيقات الخمسة</text></a>
+        <a href="#s5"><rect class="box" x="105" y="96" width="190" height="48" rx="12"/><circle class="f-gold" cx="273" cy="120" r="14"/><text class="t-gold" x="273" y="125" text-anchor="middle">5</text><text x="183" y="125" text-anchor="middle">الأمان والختام</text></a>
+      </svg>
+      </div>
+      <figcaption>الخريطة الذهنية للمحاضرة: كل فرع ذهبي محور، وكل ملاحظة بالرصاص أهم ما فيه.</figcaption>
+    </figure>
+
+    <div class="cols" style="margin-top:28px">
+      <div>
+        <h3>ماذا ستستطيع بعد المحاضرة؟</h3>
+        <p class="hint" style="margin-bottom:10px">علّم على كل هدف عندما تتقنه. العلامات تبقى محفوظة على جهازك.</p>
+        <ul class="goals">
+          <li><label><input type="checkbox" id="g1"><span>أحدد مشكلة العميل واحتياجه قبل اقتراح أي أداة.</span></label></li>
+          <li><label><input type="checkbox" id="g2"><span>أفرّق بين البرومبت والمهارة والوكيل والتطبيق، ومتى أستخدم كل واحد.</span></label></li>
+          <li><label><input type="checkbox" id="g3"><span>أسمّي أدوات الوكيل الحالية عند الشركات الكبرى والمواقع المستقلة.</span></label></li>
+          <li><label><input type="checkbox" id="g4"><span>أشرح بروتوكول الربط والموصلات بمثال بسيط.</span></label></li>
+          <li><label><input type="checkbox" id="g5"><span>أنفذ تطبيقاً عملياً واحداً على الأقل على أداة حقيقية.</span></label></li>
+        </ul>
+      </div>
+      <div class="stack">
+        <p class="pen margin-note">القاعدة الذهبية للمحاضرة كلها:<br>لا نبدأ من الأداة.. نبدأ من المشكلة.</p>
+        <p class="pencil margin-note" style="border-color:var(--pencil)">الأسماء والأزرار في هذه الأدوات تتغير بسرعة. المعلومات هنا روجعت يوم 10 نوفمبر 2026.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AXIS 1 ============ -->
+<section id="s1">
+  <div class="wrap">
+    <div class="sec-head"><div class="num">1</div><div><small>المحور الأول</small><h2>من مشكلة العميل إلى سلم الحلول</h2></div></div>
+    <p class="lead">أي تدريب لشركة أو تعامل مع عميل يبدأ بخطوتين: <span class="hl">حدّد المشكلة</span> ثم اختر درجة الحل.</p>
+
+    <div class="cols">
+      <div>
+        <h3>الخطوة الأولى: ثلاثة أسئلة</h3>
+        <ol class="qs">
+          <li>ما المهمة التي تتكرر كل يوم وتأخذ وقتاً؟</li>
+          <li>من ينفذها الآن، وعلى أي برنامج أو موقع؟</li>
+          <li>ما شكل النتيجة النهائية المطلوبة؟</li>
+        </ol>
+      </div>
+      <p class="pen margin-note">إجابات الأسئلة الثلاثة هي التي تحدد الدرجة.<br>مهمة تتكرر؟ اصعد درجة.<br>تحتاج برنامجاً خارجياً؟ اصعد درجتين.</p>
+    </div>
+
+    <h3 style="margin-top:30px">الخطوة الثانية: سلم الحلول</h3>
+    <p class="hint" style="margin-bottom:12px">اضغط على أي درجة لترى متى تستخدمها.</p>
+    <div class="duo">
+      <figure class="fig">
+        <div class="scroll">
+        <svg class="mid" viewBox="0 0 800 450" role="img" aria-label="سلم من أربع درجات: برومبت ثم مهارة ثم وكيل ثم تطبيق">
+          <g id="ladder">
+            <g class="pick" tabindex="0" role="button" data-k="0" aria-pressed="false"><rect class="box" x="590" y="330" width="170" height="60"/><text class="t-lg" x="675" y="368" text-anchor="middle">برومبت احترافي</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="1" aria-pressed="false"><rect class="box" x="420" y="260" width="170" height="130"/><text class="t-lg" x="505" y="300" text-anchor="middle">مهارة جاهزة</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="2" aria-pressed="true"><rect class="box" x="250" y="190" width="170" height="200"/><text class="t-lg" x="335" y="230" text-anchor="middle">وكيل ذكي</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="3" aria-pressed="false"><rect class="box" x="80" y="120" width="170" height="270"/><text class="t-lg" x="165" y="160" text-anchor="middle">تطبيق خاص</text></g>
+          </g>
+          <g pointer-events="none">
+            <circle class="f-gold" cx="736" cy="330" r="15" stroke="var(--ink)" stroke-width="2"/><text class="t-gold" x="736" y="335" text-anchor="middle">1</text>
+            <circle class="f-gold" cx="566" cy="260" r="15" stroke="var(--ink)" stroke-width="2"/><text class="t-gold" x="566" y="265" text-anchor="middle">2</text>
+            <circle class="f-gold" cx="396" cy="190" r="15" stroke="var(--ink)" stroke-width="2"/><text class="t-gold" x="396" y="195" text-anchor="middle">3</text>
+            <circle class="f-gold" cx="226" cy="120" r="15" stroke="var(--ink)" stroke-width="2"/><text class="t-gold" x="226" y="125" text-anchor="middle">4</text>
+            <path class="s-ink" d="M50 390 H790" stroke-width="3.5"/>
+            <path class="s-pen" d="M722 252 L300 80" marker-end="url(#ah-pen)"/>
+            <text class="t-pen" x="520" y="152" text-anchor="middle" transform="rotate(22 520 152)">كل درجة تنفّذ أكثر</text>
+            <path class="s-pencil" d="M80 414 H760 M80 406 V422 M760 406 V422" marker-start="url(#ah-pencil)"/>
+            <text class="t-pencil" x="420" y="440" text-anchor="middle">اختر أبسط درجة تحل المشكلة</text>
+          </g>
+        </svg>
+        </div>
+        <figcaption>سلم الحلول: تبدأ من اليمين بأبسط حل، ولا تصعد إلا إذا احتاجت المشكلة ذلك.</figcaption>
+      </figure>
+      <div class="panel" id="ladderPanel" aria-live="polite">
+        <span class="tag g" id="lpTag">الدرجة 3</span>
+        <h4 id="lpTitle">وكيل ذكي</h4>
+        <span class="en" id="lpEn" style="align-self:flex-start">AI Agent</span>
+        <dl>
+          <dt>ما هو؟</dt><dd id="lpWhat"></dd>
+          <dt>متى؟</dt><dd id="lpWhen"></dd>
+          <dt>مثال</dt><dd id="lpEx"></dd>
+        </dl>
+      </div>
+    </div>
+    <p class="pen" style="margin-top:20px">جملة الانتقال: البرومبت والمهارة يعطيانك إجابة.. أما الوكيل فينفّذ العمل نفسه.</p>
+  </div>
+</section>
+
+<!-- ============ AXIS 2 ============ -->
+<section id="s2">
+  <div class="wrap">
+    <div class="sec-head"><div class="num">2</div><div><small>المحور الثاني</small><h2>خريطة أدوات الوكيل الذكي</h2></div></div>
+    <p class="lead">الشات يجيب على سؤالك. الوكيل يأخذ <span class="hl">الهدف</span> ويقسمه إلى خطوات، وينفذها، ثم يسلّمك النتيجة.</p>
+
+    <figure class="fig">
+      <div class="scroll">
+      <svg class="mid" viewBox="0 0 800 290" role="img" aria-label="مقارنة: الشات يتوقف عند الإجابة، والوكيل يكمل من الهدف إلى ملف جاهز">
+        <text class="t-pencil" x="700" y="34" text-anchor="middle" style="font-size:17px">الشات</text>
+        <rect class="box" x="620" y="50" width="140" height="54" rx="10"/><text x="690" y="83" text-anchor="middle">سؤال</text>
+        <path class="s-ink" d="M616 77 H546" marker-end="url(#ah-ink)"/>
+        <rect class="box" x="400" y="50" width="140" height="54" rx="10"/><text x="470" y="83" text-anchor="middle">إجابة</text>
+        <text class="t-pen" x="250" y="83" text-anchor="middle">يتوقف هنا</text>
+        <path class="s-pen" d="M312 77 H392" marker-end="url(#ah-pen)"/>
+        <path class="s-pencil" d="M40 140 H760" stroke-dasharray="3 7"/>
+        <text class="t-pencil" x="700" y="174" text-anchor="middle" style="font-size:17px">الوكيل</text>
+        <rect class="box" x="620" y="190" width="140" height="54" rx="10"/><text x="690" y="223" text-anchor="middle">هدف</text>
+        <path class="s-ink" d="M616 217 H576" marker-end="url(#ah-ink)"/>
+        <rect class="box" x="450" y="190" width="120" height="54" rx="10"/><text x="510" y="223" text-anchor="middle">خطة</text>
+        <path class="s-ink" d="M446 217 H406" marker-end="url(#ah-ink)"/>
+        <rect class="box" x="250" y="190" width="150" height="54" rx="10"/><text x="325" y="223" text-anchor="middle">خطوات تنفيذ</text>
+        <path class="s-ink" d="M246 217 H206" marker-end="url(#ah-ink)"/>
+        <rect class="box neon" x="60" y="190" width="140" height="54" rx="10"/><text class="t-on" x="130" y="223" text-anchor="middle">ملف جاهز</text>
+        <text class="t-sm t-soft" x="596" y="270" text-anchor="middle">يقسّم</text>
+        <text class="t-sm t-soft" x="426" y="270" text-anchor="middle">ينفّذ</text>
+        <text class="t-sm t-soft" x="226" y="270" text-anchor="middle">يسلّم</text>
+      </svg>
+      </div>
+      <figcaption>الفرق بين الاثنين: الشات ينتهي دوره عند الإجابة، والوكيل يكمل حتى يسلّمك عملاً منتهياً.</figcaption>
+    </figure>
+
+    <div class="group-title"><b>النوع الأول: وكيل المهام العامة</b><span></span></div>
+    <div class="tools">
+      <article class="tool">
+        <span class="who">أنثروبيك</span>
+        <h4>كلود</h4><span class="en" style="align-self:flex-start">Claude</span>
+        <span class="was">كان اسمه كوورك</span>
+        <p>مدمج مع الشات منذ سبتمبر 2026. كلود يقرر وحده هل طلبك إجابة سريعة أم مهمة طويلة.</p>
+        <span class="tag">مدمج بالكامل</span>
+      </article>
+      <article class="tool">
+        <span class="who">أوبن إيه آي</span>
+        <h4>ورك</h4><span class="en" style="align-self:flex-start">ChatGPT Work</span>
+        <p>وضع تختاره بنفسك داخل شات جي بي تي، بجانب الشات وكودكس. أُطلق في يوليو 2026.</p>
+        <span class="tag g">وضع مستقل</span>
+      </article>
+      <article class="tool">
+        <span class="who">جوجل</span>
+        <h4>وضع المهام</h4><span class="en" style="align-self:flex-start">Gemini Task mode</span>
+        <span class="was">كان اسمه سبارك</span>
+        <p>زر للتبديل بين الشات والمهمة تحت خانة الكتابة في جيميناي. متاح في الباقات المدفوعة.</p>
+        <span class="tag g">زر تبديل</span>
+      </article>
+      <article class="tool">
+        <span class="who">مواقع مستقلة</span>
+        <h4>مانوس وجين سبارك</h4><span class="en" style="align-self:flex-start">Manus</span><span class="en" style="align-self:flex-start">Genspark</span>
+        <p>تعطيها المهمة فتنفذها على حاسوب سحابي. مانوس اشترته ميتا ثم عاد مستقلاً في أغسطس 2026.</p>
+        <span class="tag g">موقع قائم بذاته</span>
+      </article>
+    </div>
+
+    <div class="group-title"><b>النوع الثاني: وكيل البرمجة</b><span></span></div>
+    <div class="tools">
+      <article class="tool">
+        <span class="who">أنثروبيك</span>
+        <h4>كلود كود</h4><span class="en" style="align-self:flex-start">Claude Code</span>
+        <p>يكتب الكود وينفذه على مجلد مشروعك مباشرة.</p>
+      </article>
+      <article class="tool">
+        <span class="who">أوبن إيه آي</span>
+        <h4>كودكس</h4><span class="en" style="align-self:flex-start">Codex</span>
+        <p>وضع البرمجة داخل تطبيق شات جي بي تي.</p>
+      </article>
+      <article class="tool">
+        <span class="who">جوجل</span>
+        <h4>أنتي جرافيتي</h4><span class="en" style="align-self:flex-start">Google Antigravity</span>
+        <p>منصة تطوير كاملة يعمل فيها أكثر من وكيل معاً.</p>
+      </article>
+    </div>
+    <p class="pen" style="margin-top:14px">الثلاثة يحلون المشكلة بالبرمجة بالوصف: تصف ما تريد بالكلام، والوكيل يكتب الكود.</p>
+
+    <h3 style="margin-top:30px">كيف وصلنا إلى هنا؟</h3>
+    <figure class="fig">
+      <div class="scroll">
+      <svg class="wide" viewBox="0 0 1000 250" role="img" aria-label="خط زمني لأهم إعلانات أدوات الوكيل من نوفمبر 2025 إلى أكتوبر 2026">
+        <path class="s-ink" d="M970 130 H34" stroke-width="3" marker-end="url(#ah-ink)"/>
+        <g>
+          <path class="s-pencil" d="M920 123 V92 M680 123 V92 M440 123 V92 M200 123 V92 M800 137 V166 M560 137 V166 M320 137 V166 M80 137 V166"/>
+          <circle class="f-gold" cx="920" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-gold" cx="800" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-gold" cx="680" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-gold" cx="560" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-gold" cx="440" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-gold" cx="320" cy="130" r="8" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-neon" cx="200" cy="130" r="10" stroke="var(--ink)" stroke-width="2"/>
+          <circle class="f-neon" cx="80" cy="130" r="10" stroke="var(--ink)" stroke-width="2"/>
+        </g>
+        <text class="t-lg" x="920" y="40" text-anchor="middle" style="font-size:15px">نوفمبر 2025</text><text class="t-sm" x="920" y="62" text-anchor="middle">جوجل تطلق</text><text class="t-sm" x="920" y="82" text-anchor="middle">أنتي جرافيتي</text>
+        <text class="t-lg" x="800" y="186" text-anchor="middle" style="font-size:15px">يناير 2026</text><text class="t-sm" x="800" y="208" text-anchor="middle">أنثروبيك تطلق</text><text class="t-sm" x="800" y="228" text-anchor="middle">كوورك</text>
+        <text class="t-lg" x="680" y="40" text-anchor="middle" style="font-size:15px">مايو</text><text class="t-sm" x="680" y="62" text-anchor="middle">جوجل تعلن</text><text class="t-sm" x="680" y="82" text-anchor="middle">سبارك</text>
+        <text class="t-lg" x="560" y="186" text-anchor="middle" style="font-size:15px">يونيو</text><text class="t-sm" x="560" y="208" text-anchor="middle">وكيل الأعمال</text><text class="t-sm" x="560" y="228" text-anchor="middle">من ميتا</text>
+        <text class="t-lg" x="440" y="40" text-anchor="middle" style="font-size:15px">يوليو</text><text class="t-sm" x="440" y="62" text-anchor="middle">أوبن إيه آي تطلق</text><text class="t-sm" x="440" y="82" text-anchor="middle">ورك</text>
+        <text class="t-lg" x="320" y="186" text-anchor="middle" style="font-size:15px">أغسطس</text><text class="t-sm" x="320" y="208" text-anchor="middle">مانوس يعود</text><text class="t-sm" x="320" y="228" text-anchor="middle">مستقلاً</text>
+        <text class="t-lg" x="200" y="40" text-anchor="middle" style="font-size:15px">سبتمبر</text><text class="t-sm" x="200" y="62" text-anchor="middle">كلود يدمج</text><text class="t-sm" x="200" y="82" text-anchor="middle">كوورك مع الشات</text>
+        <text class="t-lg" x="80" y="186" text-anchor="middle" style="font-size:15px">أكتوبر</text><text class="t-sm" x="80" y="208" text-anchor="middle">سبارك يصبح</text><text class="t-sm" x="80" y="228" text-anchor="middle">وضع المهام</text>
+      </svg>
+      </div>
+      <figcaption>سنة واحدة غيّرت الخريطة. النقطتان الخضراوان هما آخر تغييرين: الوكيل يذوب داخل الشات.</figcaption>
+    </figure>
+    <p class="pen margin-note" style="margin-top:16px">الاتجاه واحد عند الجميع: الوكيل يدخل داخل الشات. كلود أتمّ الدمج، وجيميناي جعله زراً، وشات جي بي تي ما زال وضعاً مستقلاً.</p>
+  </div>
+</section>
+
+<!-- ============ AXIS 3 ============ -->
+<section id="s3">
+  <div class="wrap">
+    <div class="sec-head"><div class="num">3</div><div><small>المحور الثالث</small><h2>بروتوكول الربط والموصلات</h2></div></div>
+    <p class="lead">الوكيل بلا أدوات خارجية يفكر فقط. مع <span class="hl">الموصلات</span> يصبح له أيدٍ يعمل بها.</p>
+
+    <div class="tools" style="margin-bottom:24px">
+      <article class="tool">
+        <span class="who">المفهوم الأول</span>
+        <h4>بروتوكول الربط</h4><span class="en" style="align-self:flex-start">Model Context Protocol (MCP)</span>
+        <p>لغة موحدة تتفاهم بها أداة الذكاء الاصطناعي مع أي برنامج خارجي. مثل منفذ اليو إس بي: شكل واحد يدخل فيه أي جهاز.</p>
+      </article>
+      <article class="tool">
+        <span class="who">المفهوم الثاني</span>
+        <h4>الموصل</h4><span class="en" style="align-self:flex-start">Connector</span>
+        <p>الوصلة الجاهزة لبرنامج معين، مبنية على البروتوكول. مثل الكابل نفسه: واحد لكانفا، وواحد لجيميل.</p>
+      </article>
+      <article class="tool">
+        <span class="who">المفهوم الثالث</span>
+        <h4>الوكيل</h4><span class="en" style="align-self:flex-start">Agent</span>
+        <p>من يستخدم هذه الموصلات لينفذ المهمة وأنت جالس، دون أن تفتح البرنامج.</p>
+      </article>
+    </div>
+
+    <p class="hint" style="margin-bottom:12px">اضغط على أي برنامج لترى الكابل الذي يوصله، ومثالاً على ما تطلبه.</p>
+    <div class="duo">
+      <figure class="fig">
+        <div class="scroll">
+        <svg class="mid" viewBox="0 0 900 440" role="img" aria-label="أداة الذكاء الاصطناعي تتصل ببروتوكول واحد، ومنه كابل لكل برنامج خارجي">
+          <rect class="box" x="690" y="165" width="170" height="100" rx="14"/>
+          <text class="t-lg" x="775" y="208" text-anchor="middle">أداة الذكاء</text><text class="t-lg" x="775" y="236" text-anchor="middle">الاصطناعي</text>
+          <path class="s-gold" d="M684 215 H568" marker-start="url(#ah-gold)" marker-end="url(#ah-gold)"/>
+          <text class="t-sm" x="626" y="198" text-anchor="middle">لغة واحدة</text>
+          <rect class="box neon" x="400" y="120" width="160" height="190" rx="18"/>
+          <text class="t-lg t-on" x="480" y="205" text-anchor="middle">بروتوكول الربط</text>
+          <text class="t-on" x="480" y="234" text-anchor="middle" style="font-size:17px;letter-spacing:.08em">MCP</text>
+          <g class="f-ink"><rect x="394" y="159" width="12" height="12"/><rect x="394" y="184" width="12" height="12"/><rect x="394" y="209" width="12" height="12"/><rect x="394" y="234" width="12" height="12"/><rect x="394" y="259" width="12" height="12"/></g>
+          <path class="cable on" data-c="0" d="M394 165 C320 165 310 55 232 55"/>
+          <path class="cable" data-c="1" d="M394 190 C320 190 310 135 232 135"/>
+          <path class="cable" data-c="2" d="M394 215 H232"/>
+          <path class="cable" data-c="3" d="M394 240 C320 240 310 295 232 295"/>
+          <path class="cable" data-c="4" d="M394 265 C320 265 310 375 232 375"/>
+          <g id="targets">
+            <g class="pick" tabindex="0" role="button" data-k="0" aria-pressed="true"><rect class="box" x="50" y="30" width="180" height="50" rx="10"/><text x="140" y="61" text-anchor="middle">كانفا</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="1" aria-pressed="false"><rect class="box" x="50" y="110" width="180" height="50" rx="10"/><text x="140" y="141" text-anchor="middle">جيميل</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="2" aria-pressed="false"><rect class="box" x="50" y="190" width="180" height="50" rx="10"/><text x="140" y="221" text-anchor="middle">هيجز فيلد</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="3" aria-pressed="false"><rect class="box" x="50" y="270" width="180" height="50" rx="10"/><text x="140" y="301" text-anchor="middle">كابسو: واتساب</text></g>
+            <g class="pick" tabindex="0" role="button" data-k="4" aria-pressed="false"><rect class="box" x="50" y="350" width="180" height="50" rx="10"/><text x="140" y="381" text-anchor="middle">كومبوزيو: فيسبوك</text></g>
+          </g>
+          <text class="t-pen" x="480" y="92" text-anchor="middle">منفذ واحد.. كابلات كثيرة</text>
+          <path class="s-pen" d="M480 99 V114" marker-end="url(#ah-pen)"/>
+          <text class="t-pencil" x="330" y="424" text-anchor="middle">كل خط = موصل لبرنامج واحد</text>
+        </svg>
+        </div>
+        <figcaption>البروتوكول واحد وثابت ولا تصنعه أنت. الذي تضيفه لكل برنامج هو الموصل.</figcaption>
+      </figure>
+      <div class="panel" id="connPanel" aria-live="polite">
+        <span class="tag g">الموصل المختار</span>
+        <h4 id="cpTitle">كانفا</h4>
+        <span class="en" id="cpEn" style="align-self:flex-start">Canva</span>
+        <p id="cpDoes"></p>
+        <p class="hint">مثال على ما تطلبه من الوكيل:</p>
+        <p class="prompt" id="cpPrompt"></p>
+      </div>
+    </div>
+
+    <div class="cols" style="margin-top:24px">
+      <div>
+        <h3>كيف تضيف موصلاً؟</h3>
+        <ol class="qs">
+          <li>افتح إعدادات الموصلات في أداة الذكاء الاصطناعي.</li>
+          <li>اختر موصلاً جاهزاً، أو أضف موصلاً مخصصاً بلصق رابطه.</li>
+          <li>وافق على الصلاحيات مرة واحدة، ثم اطلب المهمة بالكلام.</li>
+        </ol>
+      </div>
+      <p class="pen margin-note">أهم فائدة: لا يلزم أن تعرف كيف تعمل على الموقع نفسه. الذكاء الاصطناعي هو الذي يدخل ويعمل عليه.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AXIS 4 ============ -->
+<section id="s4">
+  <div class="wrap">
+    <div class="sec-head"><div class="num">4</div><div><small>المحور الرابع</small><h2>التطبيقات العملية الخمسة</h2></div></div>
+    <p class="lead">خمسة تطبيقات من الأسهل إلى الأصعب. كل تطبيق يُشرح بنفس القالب: <span class="hl">المشكلة، الربط، الطلب، المراجعة، النتيجة</span>.</p>
+
+    <details class="app" open>
+      <summary><span class="n">1</span><span class="ttl"><h4>وكيل يدير البريد</h4><span class="proves">يثبت أن الموصل الجاهز يعمل بضغطة واحدة</span></span></summary>
+      <div class="app-body">
+        <span class="en" style="align-self:flex-start">Gmail connector</span>
+        <ul class="steps">
+          <li><b>المشكلة</b><div>بريد متراكم وردود متشابهة تأخذ وقتاً كل يوم.</div></li>
+          <li><b>الربط</b><div>تفعيل موصل جيميل من إعدادات الموصلات والموافقة على الصلاحيات.</div></li>
+          <li><b>الطلب</b><div class="prompt">اقرأ رسائل اليوم غير المقروءة، لخّصها في جدول، وجهّز مسودة رد على كل رسالة من عميل.</div></li>
+          <li><b>المراجعة</b><div>الوكيل يجهز مسودات فقط. أنت تقرأ وتضغط إرسال.</div></li>
+          <li><b>النتيجة</b><div>قارن أمام المتدربين الوقت قبل وبعد على نفس صندوق البريد.</div></li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="app">
+      <summary><span class="n">2</span><span class="ttl"><h4>وكيل ينشر على صفحة الفيسبوك</h4><span class="proves">يثبت أن موصلاً واحداً يفتح مئات الأدوات</span></span></summary>
+      <div class="app-body">
+        <span class="en" style="align-self:flex-start">Composio</span>
+        <ul class="steps">
+          <li><b>المشكلة</b><div>النشر اليومي على الصفحة يتم يدوياً ويُنسى كثيراً.</div></li>
+          <li><b>الربط</b><div>حساب على كومبوزيو، ثم إضافته كموصل مخصص في كلود أو في كلود كود، ثم ربط صفحة الفيسبوك من داخله.</div></li>
+          <li><b>الطلب</b><div class="prompt">اكتب منشوراً عن موعد الدفعة الجديدة، وجدوله على صفحتي غداً الساعة 8 مساءً.</div></li>
+          <li><b>المراجعة</b><div>اقرأ نص المنشور قبل الموافقة على النشر أو الجدولة.</div></li>
+          <li><b>النتيجة</b><div>أسبوع كامل من المنشورات المجدولة في جلسة واحدة.</div></li>
+        </ul>
+        <p class="warn">تنبيه: يعمل مع الصفحات فقط وليس الحساب الشخصي. وموعد الجدولة لازم يكون بعد أكثر من 10 دقائق.</p>
+      </div>
+    </details>
+
+    <details class="app">
+      <summary><span class="n">3</span><span class="ttl"><h4>وكيل يرد على عملاء الواتساب</h4><span class="proves">يثبت أن الذكاء الاصطناعي يعمل على موقع لا تعرفه أنت</span></span></summary>
+      <div class="app-body">
+        <span class="en" style="align-self:flex-start">Kapso</span>
+        <figure class="fig" style="box-shadow:none">
+          <div class="scroll">
+          <svg class="mid" viewBox="0 0 860 300" role="img" aria-label="رسالة العميل تصل عبر واتساب إلى الوكيل داخل كابسو فيرد عليه، وكلود يبني الوكيل ويضبطه مرة واحدة">
+            <rect class="box" x="680" y="60" width="140" height="60" rx="12"/><text x="750" y="96" text-anchor="middle">العميل</text>
+            <path class="s-ink" d="M676 90 H586" marker-end="url(#ah-ink)"/><text class="t-sm t-soft" x="630" y="80" text-anchor="middle">رسالة</text>
+            <rect class="box" x="440" y="60" width="140" height="60" rx="12"/><text x="510" y="96" text-anchor="middle">واتساب</text>
+            <path class="s-ink" d="M436 90 H346" marker-end="url(#ah-ink)"/><text class="t-sm t-soft" x="390" y="80" text-anchor="middle">تصل للوكيل</text>
+            <rect class="box neon" x="160" y="60" width="180" height="60" rx="12"/><text class="t-on" x="250" y="96" text-anchor="middle">الوكيل داخل كابسو</text>
+            <path class="s-gold" d="M320 124 C320 180 750 180 750 128" marker-end="url(#ah-gold)"/>
+            <text class="t-sm" x="535" y="192" text-anchor="middle">الرد على العميل</text>
+            <rect class="box" x="110" y="225" width="180" height="55" rx="12"/><text x="200" y="258" text-anchor="middle">كلود</text>
+            <path class="s-ink" d="M200 225 V126" stroke-dasharray="7 6" marker-end="url(#ah-ink)"/>
+            <text class="t-sm t-soft" x="118" y="170" text-anchor="middle">يبني ويضبط</text><text class="t-sm t-soft" x="118" y="188" text-anchor="middle">مرة واحدة</text>
+            <text class="t-pen" x="250" y="40" text-anchor="middle">يعمل 24 ساعة</text>
+          </svg>
+          </div>
+          <figcaption>كلود يبني الوكيل ويضبطه مرة واحدة. الرد اليومي على العملاء يتم من داخل كابسو نفسها.</figcaption>
+        </figure>
+        <ul class="steps">
+          <li><b>المشكلة</b><div>أسئلة العملاء تتكرر: السعر، المواعيد، طريقة الحجز.</div></li>
+          <li><b>الربط</b><div>حساب على كابسو وربط رقم واتساب الأعمال، ثم إضافة موصل كابسو في كلود.</div></li>
+          <li><b>الطلب</b><div class="prompt">ابنِ وكيلاً يرد على أسئلة العملاء عن الكورس: السعر والمواعيد وطريقة الحجز، وحوّل أي سؤال صعب لموظف.</div></li>
+          <li><b>المراجعة</b><div>جرّب على رقم تجريبي أولاً، وحدّد متى يتدخل إنسان.</div></li>
+          <li><b>النتيجة</b><div>رد فوري على العميل في أي ساعة، وأنت لم تفتح لوحة كابسو.</div></li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="app">
+      <summary><span class="n">4</span><span class="ttl"><h4>وكيل يرد على الماسنجر</h4><span class="proves">يثبت قيمة الحل الجاهز من صاحب المنصة نفسها</span></span></summary>
+      <div class="app-body">
+        <span class="en" style="align-self:flex-start">Meta Business Agent</span>
+        <ul class="steps">
+          <li><b>المشكلة</b><div>رسائل الصفحة تتأخر ردودها فيضيع العميل.</div></li>
+          <li><b>الربط</b><div>وكيل الأعمال من ميتا متاح مجاناً من حزمة أعمال ميتا، ويغطي واتساب وماسنجر وإنستجرام معاً.</div></li>
+          <li><b>الطلب</b><div class="prompt">ادخل على إعدادات وكيل الأعمال في صفحتي، واملأ بيانات النشاط والأسئلة الشائعة، وحدد متى يحوّل المحادثة لموظف.</div></li>
+          <li><b>المراجعة</b><div>اقرأ ما كتبه كلود في بيانات النشاط قبل تشغيل الوكيل.</div></li>
+          <li><b>النتيجة</b><div>وكيل واحد يرد على ثلاث قنوات.</div></li>
+        </ul>
+      </div>
+    </details>
+
+    <details class="app">
+      <summary><span class="n">5</span><span class="ttl"><h4>تطبيق على سطح المكتب</h4><span class="proves">يثبت أنك تبني أداة خاصة لاحتياج خاص</span></span></summary>
+      <div class="app-body">
+        <span class="en" style="align-self:flex-start">Claude Code</span>
+        <ul class="steps">
+          <li><b>المشكلة</b><div>احتياج خاص لا توجد له أداة جاهزة تناسبك. المثال: ضغط الفيديوهات قبل رفعها.</div></li>
+          <li><b>الربط</b><div>لا يحتاج موصلاً. كلود كود يعمل على مجلد في جهازك.</div></li>
+          <li><b>الطلب</b><div class="prompt">ابنِ لي برنامجاً لسطح المكتب يضغط الفيديوهات: أسحب الملف، أختار الجودة، وأحصل على نسخة أصغر.</div></li>
+          <li><b>المراجعة</b><div>جرّب البرنامج، وإذا ظهر خطأ صِفه بالكلام فيعدّله.</div></li>
+          <li><b>النتيجة</b><div>برنامج يعمل على جهازك، مثل برنامج ضغط الفيديوهات الذي بناه مقدم المحاضرة.</div></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ AXIS 5 ============ -->
+<section id="s5">
+  <div class="wrap">
+    <div class="sec-head"><div class="num">5</div><div><small>المحور الخامس</small><h2>ضوابط الأمان والختام</h2></div></div>
+    <p class="lead">الوكيل ينفذ على حسابات حقيقية. القاعدة: <span class="hl">هو يجهّز وأنت توافق</span>.</p>
+    <div class="rules">
+      <div class="rule"><b>راجع قبل الإرسال</b><p>اقرأ أي رسالة أو منشور قبل أن يخرج باسمك.</p></div>
+      <div class="rule"><b>لا أسرار في المحادثة</b><p>لا تكتب كلمات السر ولا مفاتيح الربط داخل الشات.</p></div>
+      <div class="rule"><b>أقل صلاحيات</b><p>أعطِ الوكيل ما يكفي للمهمة فقط.</p></div>
+      <div class="rule"><b>جرّب أولاً</b><p>صفحة أو رقم تجريبي قبل حسابات العمل.</p></div>
+    </div>
+    <div class="cols" style="margin-top:30px">
+      <div>
+        <h3>المحاضرة في ثلاث جمل</h3>
+        <ol class="sum">
+          <li>ابدأ من المشكلة، لا من الأداة.</li>
+          <li>اختر أبسط درجة تحل المشكلة.</li>
+          <li>الموصلات تحوّل الذكاء الاصطناعي من مستشار إلى موظف ينفّذ.</li>
+        </ol>
+      </div>
+      <div class="homework">
+        <b>تكليف المحاضرة</b>
+        <p>اختر مهمة واحدة تكررها يومياً في عملك. حدّد درجتها على سلم الحلول، ثم نفّذها بالأداة المناسبة واعرض النتيجة في المحاضرة القادمة.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="wrap">
+    <div class="sec-head"><div><small>مراجعة سريعة</small><h2>اختبر نفسك</h2></div></div>
+    <div class="quiz" id="quizBox"></div>
+    <p class="score" style="margin-top:18px">نتيجتك <output id="scoreOut">0 من 5</output><button type="button" id="resetQuiz">أعد المحاولة</button></p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>مصادر المعلومات، روجعت يوم 10 نوفمبر 2026</b>
+    <ul>
+      <li><a href="https://9to5mac.com/2026/09/16/anthropic-merging-claude-cowork-with-chat/">دمج كوورك مع الشات</a></li>
+      <li><a href="https://aitoolsreview.co.uk/insights/chatgpt-work">ورك في شات جي بي تي</a></li>
+      <li><a href="https://www.layer3labs.io/guides/what-happened-to-gemini-spark">سبارك يصبح وضع المهام</a></li>
+      <li><a href="https://eweek.com/news/meta-manus-ai-deal-china-unwind-apac/">عودة مانوس مستقلاً</a></li>
+      <li><a href="https://developers.googleblog.com/en/build-with-google-antigravity-our-new-agentic-development-platform/">أنتي جرافيتي</a></li>
+      <li><a href="https://ppc.land/meta-business-agent-brings-ai-customer-service-to-whatsapp-globally/">وكيل الأعمال من ميتا</a></li>
+      <li><a href="https://docs.kapso.ai/docs/whatsapp/mcp.md">موصل كابسو</a></li>
+      <li><a href="https://composio.dev/toolkits/facebook">كومبوزيو والفيسبوك</a></li>
+    </ul>
+    <p>الأسماء والأزرار في هذه الأدوات تتغير بسرعة، فراجعها قبل كل دفعة.</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+
+  /* scroll progress */
+  var bar=$('bar');
+  function prog(){var h=document.documentElement;var max=h.scrollHeight-h.clientHeight;bar.style.width=(max>0?(h.scrollTop/max*100):0)+'%'}
+  addEventListener('scroll',prog,{passive:true});prog();
+
+  /* goals checklist, remembered per browser */
+  var KEY='lec4-goals',saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){saved={}}
+  ['g1','g2','g3','g4','g5'].forEach(function(id){
+    var el=$(id);el.checked=!!saved[id];
+    el.addEventListener('change',function(){saved[id]=el.checked;try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}});
+  });
+
+  /* generic picker for svg groups */
+  function picker(rootId,onPick){
+    var items=[].slice.call($(rootId).querySelectorAll('.pick'));
+    function choose(g){items.forEach(function(x){x.setAttribute('aria-pressed',x===g?'true':'false')});onPick(+g.getAttribute('data-k'))}
+    items.forEach(function(g){
+      g.addEventListener('click',function(){choose(g)});
+      g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();choose(g)}});
+    });
+  }
+
+  /* ladder */
+  var L=[
+    {t:'برومبت احترافي',en:'Prompt',what:'طلب واحد مكتوب جيداً يحل المشكلة في نفس اللحظة.',when:'عندما تُحل المشكلة بطلب واحد ولا تتكرر كثيراً.',ex:'صياغة رد مهذب على شكوى عميل.'},
+    {t:'مهارة جاهزة',en:'Skill',what:'تعليمات محفوظة تنفذ نفس الخطوات كل مرة، بدل كتابة برومبت طويل.',when:'عندما تتكرر المهمة يومياً بنفس الخطوات.',ex:'خطة محتوى شهرية، أو إرشاد دوائي من اسم الدواء.'},
+    {t:'وكيل ذكي',en:'AI Agent',what:'يأخذ الهدف ويقسمه إلى خطوات وينفذها على برامج خارجية.',when:'عندما تحتاج المهمة عدة خطوات وتنفيذاً على أداة خارجية.',ex:'النشر على صفحة الفيسبوك، أو الرد على عملاء الواتساب.'},
+    {t:'تطبيق خاص',en:'Vibe coding',what:'برنامج تبنيه بالوصف بالكلام، والوكيل يكتب الكود.',when:'عندما يكون الاحتياج خاصاً ولا توجد له أداة جاهزة.',ex:'برنامج لسطح المكتب يضغط الفيديوهات.'}
+  ];
+  function showL(k){var d=L[k];$('lpTag').textContent='الدرجة '+(k+1);$('lpTitle').textContent=d.t;$('lpEn').textContent=d.en;$('lpWhat').textContent=d.what;$('lpWhen').textContent=d.when;$('lpEx').textContent=d.ex}
+  picker('ladder',showL);showL(2);
+
+  /* connectors */
+  var C=[
+    {t:'كانفا',en:'Canva',does:'الوكيل ينشئ التصميم ويعدله داخل حسابك على كانفا.',p:'صمّم منشوراً مربعاً يعلن عن الدفعة الجديدة من الكورس بألوان الأكاديمية.'},
+    {t:'جيميل',en:'Gmail',does:'الوكيل يقرأ البريد ويلخصه ويجهز مسودات الردود.',p:'لخّص رسائل اليوم وجهّز مسودة رد على كل عميل.'},
+    {t:'هيجز فيلد',en:'Higgsfield',does:'الوكيل يتعامل مع مكتبة الصور والفيديوهات المولدة في حسابك.',p:'اعرض آخر الفيديوهات التي ولّدتها هذا الأسبوع.'},
+    {t:'كابسو: واتساب',en:'Kapso',does:'الوكيل يبني ويضبط وكيل الرد على العملاء داخل كابسو.',p:'ابنِ وكيلاً يرد على أسئلة العملاء عن السعر والمواعيد.'},
+    {t:'كومبوزيو: فيسبوك',en:'Composio',does:'موصل واحد يفتح مئات البرامج، ومنها النشر على صفحات الفيسبوك.',p:'جدول هذا المنشور على صفحتي غداً الساعة 8 مساءً.'}
+  ];
+  var cables=[].slice.call(document.querySelectorAll('.cable'));
+  function showC(k){var d=C[k];$('cpTitle').textContent=d.t;$('cpEn').textContent=d.en;$('cpDoes').textContent=d.does;$('cpPrompt').textContent=d.p;
+    cables.forEach(function(c){c.classList.toggle('on',+c.getAttribute('data-c')===k)})}
+  picker('targets',showC);showC(0);
+
+  /* quiz */
+  var Q=[
+    {q:'عميل يكتب نفس البرومبت الطويل كل يوم لتقرير المبيعات. ما الحل الأنسب؟',o:['برومبت جديد','مهارة جاهزة','تطبيق خاص'],a:1,why:'المهمة تتكرر بنفس الخطوات، والمهارة تحفظها مرة واحدة.'},
+    {q:'ما الذي تضيفه لكل برنامج تريد ربطه بالذكاء الاصطناعي؟',o:['بروتوكولاً جديداً','موصلاً','حساباً جديداً'],a:1,why:'البروتوكول واحد وثابت، والموصل هو الكابل الخاص بكل برنامج.'},
+    {q:'على ماذا ينشر كومبوزيو في الفيسبوك؟',o:['الحساب الشخصي','الصفحات فقط','الاثنين معاً'],a:1,why:'يعمل مع الصفحات فقط.'},
+    {q:'من يرد على عميل الواتساب في منتصف الليل؟',o:['كلود مباشرة','الوكيل داخل كابسو','صاحب الصفحة'],a:1,why:'كلود يبني الوكيل مرة واحدة، والرد اليومي يتم من داخل كابسو.'},
+    {q:'ما الاسم الحالي لوكيل جيميناي؟',o:['سبارك','ورك','وضع المهام'],a:2,why:'سبارك تغيّر اسمه إلى وضع المهام في أكتوبر 2026.'}
+  ];
+  var box=$('quizBox'),score=0,done=0;
+  function upd(){$('scoreOut').textContent=score+' من '+Q.length+(done===Q.length?(score===Q.length?' · ممتاز':' · راجع ما فاتك'):'')}
+  function build(){
+    box.textContent='';score=0;done=0;
+    Q.forEach(function(it,i){
+      var d=document.createElement('div');d.className='q';
+      var p=document.createElement('p');p.textContent=(i+1)+'. '+it.q;d.appendChild(p);
+      var os=document.createElement('div');os.className='opts';
+      var fb=document.createElement('div');fb.className='fb';fb.setAttribute('aria-live','polite');
+      it.o.forEach(function(txt,j){
+        var b=document.createElement('button');b.type='button';b.textContent=txt;
+        b.addEventListener('click',function(){
+          if(d.dataset.done)return;d.dataset.done='1';done++;
+          [].forEach.call(os.children,function(x,idx){x.disabled=true;if(idx===it.a)x.classList.add('right')});
+          if(j===it.a){score++;fb.textContent='صح. '+it.why}else{b.classList.add('wrong');fb.textContent='الإجابة الصحيحة مظللة. '+it.why}
+          upd();
+        });
+        os.appendChild(b);
+      });
+      d.appendChild(os);d.appendChild(fb);box.appendChild(d);
+    });
+    upd();
+  }
+  $('resetQuiz').addEventListener('click',build);build();
+})();
+</script>
+</body>
+</html>
